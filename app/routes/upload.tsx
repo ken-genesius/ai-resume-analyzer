@@ -12,7 +12,7 @@ const upload = () => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
-  const [file, setFile] = useState<File | null>();
+  const [file, setFile] = useState<File | null>(null);
 
   const handleFileSelect = (file: File | null) => {
     setFile(file);
@@ -30,14 +30,17 @@ const upload = () => {
     file: File;
   }) => {
     setIsProcessing(true);
+
     setStatusText("Uploading the file ...");
     const uploadedFile = await fs.upload([file]);
-
     if (!uploadedFile) return setStatusText("Error: Failed to upload file");
 
     setStatusText("Converting to image ...");
     const imageFile = await convertPdfToImage(file);
-    if (!imageFile.file) return setStatusText("Failed to convert PDF to image");
+    if (!imageFile.file) {
+      console.log(imageFile.error);
+      return setStatusText("Failed to convert PDF to image");
+    }
 
     setStatusText("Uploading the image ...");
     const uploadedImage = await fs.upload([imageFile.file]);
@@ -75,6 +78,7 @@ const upload = () => {
     await kv.set(`resume:${uuid}`, JSON.stringify(data));
     setStatusText("Analysis complete, redirecting ...");
     console.log(data);
+    navigate(`/resume/${uuid}`);
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {

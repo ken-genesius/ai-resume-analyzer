@@ -77,7 +77,14 @@ const resume = () => {
         <section className="feedback-section">
           <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
           {feedback ? (
-            <div className="flex flex-col gap-8 animate-in fade-in duration-10001"></div>
+            <div className="flex flex-col gap-8 animate-in fade-in duration-10001">
+              <Summary feedback={feedback} />
+              <ATS
+                score={feedback.ATS.score || 0}
+                suggestions={feedback.ATS.tips || []}
+              />
+              <Details feedback={feedback} />
+            </div>
           ) : (
             <img src="/images/resume-scan-2.gif" alt="" className="w-full" />
           )}
